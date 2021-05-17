@@ -26,9 +26,10 @@ public class SVGParser
 	}
 */	
 	
-	private Path2D.Double parseSVG(String path) throws IOException
+	public Path2D.Double parseSVG(String path) throws IOException
 	{
 		Path2D.Double out = new Path2D.Double();
+		out.moveTo(0.0,0.0);
 		ArrayList<ArrayList<Object>> commands = new ArrayList<ArrayList<Object>>();
 		Pattern.compile("(?=[mlhvcsqtaz])",Pattern.CASE_INSENSITIVE).splitAsStream(path)
 				.forEach
@@ -38,7 +39,7 @@ public class SVGParser
 						ArrayList<Object> command = new ArrayList<Object>();
 						command.add(s.charAt(0));
 						Pattern.compile("[ ,]").splitAsStream(s.substring(1).strip())
-							.map(d -> java.lang.Double.valueOf(d))
+							.map(d -> Double.valueOf(d))
 							.forEach(d -> command.add(d));
 						commands.add(command);
 					}
@@ -48,20 +49,20 @@ public class SVGParser
 		{
 			Double x2 = 0.0;
 			Double y2 = 0.0;		//coordinates for smooth bezier curves (more practical than getting the previous control/end point through a path iterator)
-			switch ((String)command.get(0))
+			switch ((char)command.get(0))
 /*			TODO: 
 				ensure correct order of parameters, accounting for difference between Java path methods and SVG path commands
 				add cases for absolute commands (uppercase)
 */
 			{
-				case "m":
+				case 'm':
 					out.moveTo
 					(
 							out.getCurrentPoint().getX() + (double)command.remove(1),
 							out.getCurrentPoint().getY() + (double)command.remove(1)
 					);
 				//break not included because subsequent coordinate pairs are interpreted as "lineto" commands
-				case "l":
+				case 'l':
 					while (command.size() > 1)
 					{
 						out.lineTo
@@ -72,7 +73,7 @@ public class SVGParser
 					}
 					break;
 					
-				case "h":
+				case 'h':
 					while (command.size() > 1)
 					{
 						out.lineTo
@@ -83,7 +84,7 @@ public class SVGParser
 					}
 					break;
 					
-				case "v":
+				case 'v':
 					while (command.size() > 1)
 					{
 						out.lineTo
@@ -94,7 +95,7 @@ public class SVGParser
 					}
 					break;
 					
-				case "c":
+				case 'c':
 					while (command.size() > 1)
 					{
 						java.lang.Double x1 = out.getCurrentPoint().getX() + (double)command.remove(1);
@@ -107,7 +108,7 @@ public class SVGParser
 					}
 					break;
 					
-				case "s":
+				case 's':
 					while (command.size() > 1)
 					{
 						//reflects previous end control point over current point
@@ -124,7 +125,7 @@ public class SVGParser
 					}
 					break;
 					
-				case "q":
+				case 'q':
 					while (command.size() > 1)
 					{
 						x2 = out.getCurrentPoint().getX() + (double)command.remove(1);	//control point (x2 is really x1)
@@ -137,7 +138,7 @@ public class SVGParser
 					}
 					break;
 					
-				case "t":
+				case 't':
 					while (command.size() > 1)
 					{
 						x2 = 2*out.getCurrentPoint().getX() - x2;	//control point
@@ -152,7 +153,7 @@ public class SVGParser
 					break;
 /*				case "a":
 				MORE CASES
-*/				case "z":
+*/				case 'z':
 					out.closePath();
 					break;
 					
