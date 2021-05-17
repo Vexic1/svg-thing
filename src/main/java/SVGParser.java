@@ -25,34 +25,9 @@ public class SVGParser
 	}
 */	
 	
-	
-	//	methods with relative coords
-	private void relMoveTo(Object dx1, Object dy1)
+	public Path2D.Double parseSVG(String path) throws IOException
 	{
-		super.moveTo(this.getCurrentPoint().getX() + (java.lang.Double)dx1 , this.getCurrentPoint().getY() + (java.lang.Double)dy1);
-	}
-	private void relLineTo(Object dx1, Object dy1)
-	{
-		super.lineTo(this.getCurrentPoint().getX() + (java.lang.Double)dx1, this.getCurrentPoint().getY() + (java.lang.Double)dy1);
-	}
-/*	private void relCurveTo(Object dx1, Object dy1, Object dx2, Object dy2, Object dx3, Object dy3)
-	{
-		java.lang.Double x1 = this.getCurrentPoint().getX();
-		java.lang.Double y1 = this.getCurrentPoint().getY();
-		super.curveTo(x1 + (java.lang.Double)dx1, y1 + (java.lang.Double)dy1, x1 + (java.lang.Double)dx2, y1 + (java.lang.Double)dy2, x1 + (java.lang.Double)dx3, y1 + (java.lang.Double)dy3);
-	}
-	private void relQuadTo(Object dx1, Object dy1, Object dx2, Object dy2)
-	{
-		java.lang.Double x1 = this.getCurrentPoint().getX();
-		java.lang.Double y1 = this.getCurrentPoint().getY();
-		super.quadTo(x1 + (java.lang.Double)dx1, y1 + (java.lang.Double)dy1, x1 + (java.lang.Double)dx2, y1 + (java.lang.Double)dy2);
-	}
-*///				methods for relative bezier curves not practical
-	
-	
-	
-	public void parseSVG(String path) throws IOException
-	{
+		Path2D.Double out = new Path2D.Double();
 		ArrayList<ArrayList<Object>> commands = new ArrayList<ArrayList<Object>>();
 		Pattern.compile("(?=[mlhvcsqtaz])",Pattern.CASE_INSENSITIVE).splitAsStream(path)
 				.forEach
@@ -70,7 +45,7 @@ public class SVGParser
 				
 		for (ArrayList<Object> command : commands)
 		{
-			java.lang.Double x2,y2;		//coordinates for smooth bezier curves (more practical than getting the previous control/end point through a path iterator)
+			Double x2,y2;		//coordinates for smooth bezier curves (more practical than getting the previous control/end point through a path iterator)
 			switch ((String)command.get(0))
 /*			TODO: 
 				ensure correct order of parameters, accounting for difference between Java path methods and SVG path commands
@@ -78,19 +53,19 @@ public class SVGParser
 */
 			{
 				case "m":
-					relMoveTo
+					out.moveTo
 					(
-							command.remove(1),
-							command.remove(1)
+							out.getCurrentPoint().getX() + (double)command.remove(1),
+							out.getCurrentPoint().getY() + (double)command.remove(1)
 					);
 				//break not included because subsequent coordinate pairs are interpreted as "lineto" commands
 				case "l":
 					while (command.size() > 1)
 					{
-						relLineTo
+						out.lineTo
 						(
-							command.remove(1),
-							command.remove(1)
+							out.getCurrentPoint().getX() + (double)command.remove(1),
+							out.getCurrentPoint().getY() + (double)command.remove(1)
 						);
 					}
 					break;
@@ -98,10 +73,10 @@ public class SVGParser
 				case "h":
 					while (command.size() > 1)
 					{
-						relLineTo
+						out.lineTo
 						(
-							command.remove(1),
-							getCurrentPoint().getX()
+							out.getCurrentPoint().getX() + (double)command.remove(1),
+							out.getCurrentPoint().getY()
 						);
 					}
 					break;
@@ -109,10 +84,10 @@ public class SVGParser
 				case "v":
 					while (command.size() > 1)
 					{
-						relLineTo
+						out.lineTo
 						(
-							getCurrentPoint().getX(),
-							command.remove(1)
+							out.getCurrentPoint().getX(),
+							out.getCurrentPoint().getX() + (double)command.remove(1)
 						);
 					}
 					break;
@@ -120,13 +95,13 @@ public class SVGParser
 				case "c":
 					while (command.size() > 1)
 					{
-						java.lang.Double x1 = getCurrentPoint().getX() + (double)command.remove(1);
-						java.lang.Double y1 = getCurrentPoint().getY() + (double)command.remove(1);
-						x2 = getCurrentPoint().getX() + (double)command.remove(1);
-						y2 = getCurrentPoint().getY() + (double)command.remove(1);
-						java.lang.Double x = getCurrentPoint().getX() + (double)command.remove(1);
-						java.lang.Double y = getCurrentPoint().getY() + (double)command.remove(1);
-						curveTo(x1, y1, x2, y2, x, y);
+						java.lang.Double x1 = out.getCurrentPoint().getX() + (double)command.remove(1);
+						java.lang.Double y1 = out.getCurrentPoint().getY() + (double)command.remove(1);
+						x2 = out.getCurrentPoint().getX() + (double)command.remove(1);
+						y2 = out.getCurrentPoint().getY() + (double)command.remove(1);
+						Double x = out.getCurrentPoint().getX() + (double)command.remove(1);
+						Double y = out.getCurrentPoint().getY() + (double)command.remove(1);
+						out.curveTo(x1, y1, x2, y2, x, y);
 					}
 					break;
 					
@@ -134,15 +109,15 @@ public class SVGParser
 					while (command.size() > 1)
 					{
 						//reflects previous end control point over current point
-						java.lang.Double x1 = 2*getCurrentPoint().getX() - x2;
-						java.lang.Double y1 = 2*getCurrentPoint().getY() - y2;
-						x2 = getCurrentPoint().getX() + (double)command.remove(1);
-						y2 = getCurrentPoint().getY() + (double)command.remove(1);
-						curveTo
+						Double x1 = 2*out.getCurrentPoint().getX() - x2;
+						Double y1 = 2*out.getCurrentPoint().getY() - y2;
+						x2 = out.getCurrentPoint().getX() + (double)command.remove(1);
+						y2 = out.getCurrentPoint().getY() + (double)command.remove(1);
+						out.curveTo
 						(
 								x1, y1, x2, y2, 
-								getCurrentPoint().getX() + (double)command.remove(1), 
-								getCurrentPoint().getY() + (double)command.remove(1)
+								out.getCurrentPoint().getX() + (double)command.remove(1), 
+								out.getCurrentPoint().getY() + (double)command.remove(1)
 						);
 					}
 					break;
@@ -150,12 +125,12 @@ public class SVGParser
 				case "q":
 					while (command.size() > 1)
 					{
-						x2 = getCurrentPoint().getX() + (double)command.remove(1);	//control point (x2 is really x1)
-						y2 = getCurrentPoint().getY() + (double)command.remove(1);
-						quadTo(
+						x2 = out.getCurrentPoint().getX() + (double)command.remove(1);	//control point (x2 is really x1)
+						y2 = out.getCurrentPoint().getY() + (double)command.remove(1);
+						out.quadTo(
 							x2, y2,
-							getCurrentPoint().getX() + (double)command.remove(1),
-							getCurrentPoint().getY() + (double)command.remove(1)
+							out.getCurrentPoint().getX() + (double)command.remove(1),
+							out.getCurrentPoint().getY() + (double)command.remove(1)
 						);
 					}
 					break;
@@ -163,20 +138,20 @@ public class SVGParser
 				case "t":
 					while (command.size() > 1)
 					{
-						x2 = 2*getCurrentPoint().getX() - x2;	//control point
-						y2 = 2*getCurrentPoint().getY() - y2;
-						quadTo
+						x2 = 2*out.getCurrentPoint().getX() - x2;	//control point
+						y2 = 2*out.getCurrentPoint().getY() - y2;
+						out.quadTo
 						(
 							x2, y2,
-							getCurrentPoint().getX() + (double)command.remove(1),
-							getCurrentPoint().getY() + (double)command.remove(1)
+							out.getCurrentPoint().getX() + (double)command.remove(1),
+							out.getCurrentPoint().getY() + (double)command.remove(1)
 						);
 					}
 					break;
 /*				case "a":
 				MORE CASES
 */				case "z":
-					closePath();
+					out.closePath();
 					break;
 					
 				default:
@@ -185,5 +160,6 @@ public class SVGParser
 					System.exit(1);
 			}
 		}
+		return out;
 	}
 }
