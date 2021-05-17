@@ -46,7 +46,8 @@ public class SVGParser
 				
 		for (ArrayList<Object> command : commands)
 		{
-			Double x2,y2;		//coordinates for smooth bezier curves (more practical than getting the previous control/end point through a path iterator)
+			Double x2 = 0.0;
+			Double y2 = 0.0;		//coordinates for smooth bezier curves (more practical than getting the previous control/end point through a path iterator)
 			switch ((String)command.get(0))
 /*			TODO: 
 				ensure correct order of parameters, accounting for difference between Java path methods and SVG path commands
