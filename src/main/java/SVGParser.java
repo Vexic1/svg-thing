@@ -7,6 +7,7 @@ import java.util.ArrayList;
  * TODO:
  *		make everything work
  *		write better javadoc
+ *		parse XML
  * [insert description here]
  * @author [redacted]
  */
