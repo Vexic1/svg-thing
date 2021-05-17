@@ -25,7 +25,7 @@ public class SVGParser
 	}
 */	
 	
-	public Path2D.Double parseSVG(String path) throws IOException
+	private Path2D.Double parseSVG(String path) throws IOException
 	{
 		Path2D.Double out = new Path2D.Double();
 		ArrayList<ArrayList<Object>> commands = new ArrayList<ArrayList<Object>>();
