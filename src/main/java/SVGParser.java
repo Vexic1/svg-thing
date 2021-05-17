@@ -10,7 +10,7 @@ import java.util.ArrayList;
  * [insert description here]
  * @author [redacted]
  */
-public class SVGParser extends Path2D.Double
+public class SVGParser
 {
 //	WHAT??????
 /*	public SVGParser(String svg)	//change??
