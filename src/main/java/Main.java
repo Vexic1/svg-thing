@@ -37,7 +37,7 @@ public class Main
 	   
 		initializeJFrame(window);		  //initializes the window to your settings
 
-	  
+//test
 	}
 	
 }
