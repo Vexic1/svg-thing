@@ -87,56 +87,97 @@ public class SVGParser
 				add cases for absolute commands (uppercase)
 */
 			{
+				case 'M':
+					out.moveTo((double)command.remove(1),(double)command.remove(1));
+				//neither break nor while loop included because subsequent coordinate pairs are interpreted as "lineto" commands
+				case 'L':
+					while (command.size() > 1)
+						out.lineTo((double)command.remove(1),(double)command.remove(1));
+					break;
 				case 'm':
 					out.moveTo
 					(
 							out.getCurrentPoint().getX() + (double)command.remove(1),
 							out.getCurrentPoint().getY() + (double)command.remove(1)
 					);
-				//break not included because subsequent coordinate pairs are interpreted as "lineto" commands
+				//ditto
 				case 'l':
 					while (command.size() > 1)
-					{
 						out.lineTo
 						(
 							out.getCurrentPoint().getX() + (double)command.remove(1),
 							out.getCurrentPoint().getY() + (double)command.remove(1)
 						);
-					}
+					break;
+				
+				case 'H':
+					while (command.size() > 1)
+						out.lineTo((double)command.remove(1), out.getCurrentPoint().getY());
 					break;
 					
 				case 'h':
 					while (command.size() > 1)
-					{
 						out.lineTo
 						(
 							out.getCurrentPoint().getX() + (double)command.remove(1),
 							out.getCurrentPoint().getY()
 						);
-					}
+					break;
+					
+				case 'V':
+					while (command.size() > 1)
+						out.lineTo(out.getCurrentPoint().getX(), (double)command.remove(1));
 					break;
 					
 				case 'v':
 					while (command.size() > 1)
-					{
 						out.lineTo
 						(
 							out.getCurrentPoint().getX(),
 							out.getCurrentPoint().getX() + (double)command.remove(1)
 						);
-					}
 					break;
+				
+				case 'C':
+					while (command.size() > 1)
+					{
+						Double x1 = (double)command.remove(1);
+						Double y1 = (double)command.remove(1);
+						x2 = (double)command.remove(1);
+						y2 = (double)command.remove(1);
+						Double x = (double)command.remove(1);
+						Double y = (double)command.remove(1);
+						out.curveTo(x1, y1, x2, y2, x, y);
+					}
+					break;					
 					
 				case 'c':
 					while (command.size() > 1)
 					{
-						java.lang.Double x1 = out.getCurrentPoint().getX() + (double)command.remove(1);
-						java.lang.Double y1 = out.getCurrentPoint().getY() + (double)command.remove(1);
+						Double x1 = out.getCurrentPoint().getX() + (double)command.remove(1);
+						Double y1 = out.getCurrentPoint().getY() + (double)command.remove(1);
 						x2 = out.getCurrentPoint().getX() + (double)command.remove(1);
 						y2 = out.getCurrentPoint().getY() + (double)command.remove(1);
 						Double x = out.getCurrentPoint().getX() + (double)command.remove(1);
 						Double y = out.getCurrentPoint().getY() + (double)command.remove(1);
 						out.curveTo(x1, y1, x2, y2, x, y);
+					}
+					break;
+					
+				case 'S':
+					while (command.size() > 1)
+					{
+						//reflects previous end control point over current point
+						Double x1 = 2*out.getCurrentPoint().getX() - x2;
+						Double y1 = 2*out.getCurrentPoint().getY() - y2;
+						x2 = (double)command.remove(1);
+						y2 = (double)command.remove(1);
+						out.curveTo
+						(
+								x1, y1, x2, y2, 
+								(double)command.remove(1), 
+								(double)command.remove(1)
+						);
 					}
 					break;
 					
@@ -156,6 +197,20 @@ public class SVGParser
 						);
 					}
 					break;
+	
+				case 'Q':
+					while (command.size() > 1)
+					{
+						x2 = (double)command.remove(1);	//control point (x2 is really x1)
+						y2 = (double)command.remove(1);
+						out.quadTo
+						(
+							x2, y2,
+							(double)command.remove(1),
+							(double)command.remove(1)
+						);
+					}
+					break;					
 					
 				case 'q':
 					while (command.size() > 1)
@@ -169,6 +224,21 @@ public class SVGParser
 						);
 					}
 					break;
+
+				case 'T':
+					while (command.size() > 1)
+					{
+						x2 = 2*out.getCurrentPoint().getX() - x2;	//control point
+						y2 = 2*out.getCurrentPoint().getY() - y2;
+						out.quadTo
+						(
+							x2, y2,
+							(double)command.remove(1),
+							(double)command.remove(1)
+						);
+					}
+					break;
+
 					
 				case 't':
 					while (command.size() > 1)
@@ -183,14 +253,18 @@ public class SVGParser
 						);
 					}
 					break;
-/*				case "a":
+					
+				case 'A':
+					
+/*
 				MORE CASES
-*/				case 'z':
+*/				case 'Z':
+				case 'z':
 					out.closePath();
 					break;
 					
 				default:
-					//throw exception??
+					//define exception??
 					System.err.println("Invalid input.");
 					System.exit(1);
 			}

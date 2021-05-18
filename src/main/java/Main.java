@@ -20,7 +20,7 @@ public class Main
 		jf.setSize(800, 1000);				 //sets the size of the window
    
 		jf.setLocationRelativeTo(null);					//centers the window
-		jf.setTitle("Rectangles");				  // sets the title bar
+		jf.setTitle("test");				  // sets the title bar
 		jf.setVisible(true);							  // makes the window visible
 	}
 	
@@ -29,7 +29,7 @@ public class Main
 		JFrame window = new JFrame();			//makes a jframe
 		
 		//LettersMove lm = new LettersMove();
-	   // window.add(lm);
+		// window.add(lm);
 		
 		JPanelClass jp = new JPanelClass();
 		window.add(jp);
