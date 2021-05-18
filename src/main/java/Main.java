@@ -1,12 +1,14 @@
-import java.io.IOException;
-import java.awt.geom.*;
+import java.io.*;
+import java.awt.geom.Path2D;
+import java.util.ArrayList;
+import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.SAXException;
 
 public class Main
 {
-	public static void main(String[] args) throws IOException
+	public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException
 	{
 		SVGParser test = new SVGParser();
-		Path2D.Double svg = test.parseSVG("m 1584.34,323.668 c 1.64,0.234 2.06,2.064 3.79,2.315 1.25,0.18 3.05,0.337 3.9,1.456 0.91,1.195 2.48,1.062 3.33,2.317 0.27,0.384 0.47,0.795 0.65,1.219 0,0 0,0.139 0.25,-0.113 0.3,-0.252 0.25,-0.226 0.45,-0.579 0.2,-0.353 0.15,-0.378 0.43,-0.58 0.28,-0.201 0.71,-0.277 0.81,-0.604 0.1,-0.328 0.1,-1.487 0,-1.916 -0.1,-0.428 0.4,-0.957 0.85,-1.209 0.46,-0.252 0.36,-0.932 0.34,-0.948 -2.1,0.388 -3.5,-0.217 -5.31,-1.007 -1.52,-0.665 -9.47,-4.214 -9.49,-0.351");
-		System.out.println(svg);
+		ArrayList<Path2D.Double> out = test.parseFile(new File("/Users/student/BlankMap-World.svg"));
 	}
 }
