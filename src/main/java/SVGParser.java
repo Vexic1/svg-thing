@@ -67,10 +67,13 @@ public class SVGParser
 					{
 						ArrayList<Object> command = new ArrayList<Object>();
 						command.add(s.charAt(0));
-						Pattern.compile("[ ,]").splitAsStream(s.substring(1).strip())
-							.map(d -> Double.valueOf(d))
-							.forEach(d -> command.add(d));
-						commands.add(command);
+						if (s.charAt(0) != 'z')
+						{
+							Pattern.compile("[ ,]").splitAsStream(s.substring(1).strip())
+								.map(d -> Double.valueOf(d))
+								.forEach(d -> command.add(d));
+							commands.add(command);
+						}
 					}
 				);
 				
