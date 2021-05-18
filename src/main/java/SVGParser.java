@@ -2,6 +2,9 @@ import java.awt.geom.*;
 import java.io.*;
 import java.util.regex.Pattern;
 import java.util.ArrayList;
+import javax.xml.parsers.*;
+import org.w3c.dom.*;
+import org.xml.sax.SAXException;
 
 /**
  * TODO:
@@ -25,8 +28,34 @@ public class SVGParser
 		
 	}
 */	
+	public ArrayList<Path2D.Double> parseFile(File f) throws ParserConfigurationException, SAXException, IOException 
+	{
+		ArrayList<Path2D.Double> out = new ArrayList<Path2D.Double>();
+				
+		NodeList paths = DocumentBuilderFactory
+			.newDefaultInstance()
+			.newDocumentBuilder()
+			.parse(f)
+			.getDocumentElement()
+			.getElementsByTagName("path");
+		
+		for (int i = 0; i < paths.getLength(); i++)
+			out.add
+			(
+				parseSVG
+				(
+					paths
+						.item(i)
+						.getAttributes()
+						.getNamedItem("d")
+						.getTextContent()
+				)
+			);
+		
+		return out;
+	}
 	
-	public Path2D.Double parseSVG(String path) throws IOException
+	private Path2D.Double parseSVG(String path) throws IOException
 	{
 		Path2D.Double out = new Path2D.Double();
 		out.moveTo(0.0,0.0);
