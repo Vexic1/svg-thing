@@ -1,6 +1,6 @@
 /**
  *
- * @author ***REMOVED***
+ * @author [redacted]
  * Setup for JFrame
  * 
  */
