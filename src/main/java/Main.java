@@ -13,7 +13,8 @@ import org.xml.sax.SAXException;
 public class Main
 {
 	
-	public static void initializeJFrame(JFrame jf){
+	public static void initializeJFrame(JFrame jf)
+	{
 		
 		jf.getContentPane().setBackground(Color.green);	//set color of main window
 		jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //makes the exit icon work correctly
