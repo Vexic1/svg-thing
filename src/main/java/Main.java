@@ -1,6 +1,6 @@
 /**
  *
- * @author Mr. Maroney
+ * @author [redacted]
  * Setup for JFrame
  * 
  */
