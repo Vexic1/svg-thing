@@ -20,10 +20,9 @@ public class JPanelClass extends JPanel
 		out = test.parseFile(new File("/Users/student/BlankMap-World.svg"));
 		
 		// seting up JPanel properties for display
-		Dimension dim = new Dimension(500,600);
+//		Dimension dim = new Dimension(500,600);
 		
-		this.setPreferredSize(dim);
-		this.setBackground(Color.red);
+//		this.setPreferredSize(dim);
 	 //   this.setLayout(null);
 		this.setVisible(true);
 		this.setFocusable(true);
@@ -33,9 +32,15 @@ public class JPanelClass extends JPanel
 	public void drawItems(Graphics g)
 	{
 		Graphics2D g2 = (Graphics2D)g;
-		
+		int maxX = 0;
+		int maxY = 0;
 		for (Path2D.Double shape : out)
+		{
+			maxX = (int)shape.getBounds2D().getMaxX() > maxX ? (int)shape.getBounds2D().getMaxX() : maxX;
+			maxY = (int)shape.getBounds2D().getMaxY() > maxY ? (int)shape.getBounds2D().getMaxX() : maxY;
 			g2.draw(shape);
+		}
+		this.setPreferredSize(new Dimension(maxX, maxY));
 	}
 	
 	@Override
