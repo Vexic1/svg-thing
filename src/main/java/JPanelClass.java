@@ -1,14 +1,3 @@
-
-
-/**
- *
- * @author [redacted]
- * Make a JPanel to add to your window.
- * Most of the functionality of the GUI will be in the JPanels
- * You may have more than one JPanel in a JFrame.
- * Think the look of your GUI project before you start coding!
- */
-
 import java.awt.*;
 import java.awt.geom.Path2D;
 import java.io.File;

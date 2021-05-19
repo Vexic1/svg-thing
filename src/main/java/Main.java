@@ -1,9 +1,3 @@
-/**
- *
- * @author [redacted]
- * Setup for JFrame
- * 
- */
 import javax.swing.JFrame;	 //class for main canvas(window)
 import java.awt.*;
 import java.io.IOException;
@@ -27,10 +21,7 @@ public class Main
 	
 	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException
 	{
-		JFrame window = new JFrame();			//makes a jframe
-		
-		//LettersMove lm = new LettersMove();
-		// window.add(lm);
+		JFrame window = new JFrame();
 		
 		JPanelClass jp = new JPanelClass();
 		window.add(jp);
