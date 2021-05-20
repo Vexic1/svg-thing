@@ -1,31 +1,85 @@
-import javax.swing.JFrame;	 //class for main canvas(window)
+import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Path2D;
 import java.io.IOException;
+import java.util.ArrayList;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
 public class Main
 {
-	
+	static GridBagLayout lo = new GridBagLayout();
 	public static void initializeJFrame(JFrame jf)
 	{
-		
-		jf.getContentPane().setBackground(Color.green);	//set color of main window
 		jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //makes the exit icon work correctly
-		jf.setSize(800, 1000);				 //sets the size of the window
-   
-		jf.setLocationRelativeTo(null);					//centers the window
+		jf.setSize(800, 700);				 //sets the size of the window
+		jf.setLayout(lo);
 		jf.setTitle("test");				  // sets the title bar
-		jf.setVisible(true);							  // makes the window visible
+		jf.setVisible(true);
+		
 	}
 	
 	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException
 	{
 		JFrame window = new JFrame();
-		
 		JPanelClass jp = new JPanelClass();
-		window.add(jp);
-	   
+		JSlider js = new JSlider(JSlider.VERTICAL, 1, 100, 4);
+		JScrollPane sp = new JScrollPane(jp, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		sp.setPreferredSize(new Dimension(700,600));
+		JViewport vp = sp.getViewport();
+		ChangeListener cl = new ChangeListener()
+		{
+			int zoom;
+			public void stateChanged(ChangeEvent e)
+			{
+				zoom = ((JSlider)e.getSource()).getValue();
+				//vp.setViewPosition(new Point(vp.getViewPosition().x*zoom, vp.getViewPosition().y*zoom));
+//				jp.setPreferredSize(new Dimension(jp.getPreferredSize().width*zoom,jp.getPreferredSize().height*zoom));
+				jp.at.setToScale(zoom/4.0, zoom/4.0);
+//				vp.setExtentSize(newExtent);
+				jp.repaint();
+				jp.revalidate();
+			}
+		};
+		js.addChangeListener(cl);
+				
+		window.add(sp);
+		window.add(js);
+
+//		drag scroll
+//		sp.setAutoscrolls(false);
+		MouseAdapter mouse = new MouseAdapter()
+		{//anonymous class
+			int lastX, lastY;			
+			
+			@Override
+			public void mousePressed(MouseEvent e)
+			{
+				lastX = e.getX();
+				lastY = e.getY();
+			}
+			
+			@Override
+			public void mouseReleased(MouseEvent e)
+			{
+				System.out.println(vp.getExtentSize());
+				System.out.println(vp.getViewSize());
+				System.out.println(vp.getViewRect());
+			}
+			
+			@Override
+			public void mouseDragged(MouseEvent e)
+			{
+				vp.setViewPosition(new Point(vp.getViewPosition().x + (lastX - e.getX()), vp.getViewPosition().y + (lastY - e.getY())));
+				mousePressed(e);
+			}
+		};
+		sp.addMouseListener(mouse);
+		sp.addMouseMotionListener(mouse);
 		initializeJFrame(window);		  //initializes the window to your settings
 
 //test
