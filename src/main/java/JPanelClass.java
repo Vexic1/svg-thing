@@ -1,27 +1,28 @@
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Path2D;
-import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JPanel;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
 import javax.swing.JViewport;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
 public class JPanelClass extends JPanel
 {
+	JViewport vp;
+	Rectangle r;
 	ArrayList<Path2D.Double> out;
 	AffineTransform at = new AffineTransform();
 	
 	JPanelClass() throws ParserConfigurationException, SAXException, IOException
 	{
-		SVGParser parser = new SVGParser();
-		out = parser.parseFile(new File("/Users/student/BlankMap-World.svg"));
-
+		out = SVGParser.parseFile(new File("/Users/student/BlankMap-World.svg"));
+		
 		this.setVisible(true);
 		this.setFocusable(true);
 
@@ -33,6 +34,7 @@ public class JPanelClass extends JPanel
 			maxY = (int)shape.getBounds2D().getMaxY() > maxY ? (int)shape.getBounds2D().getMaxX() : maxY;
 		}
 		this.setPreferredSize(new Dimension(maxX, maxY));
+		
 	}
 		
 	public void drawItems(Graphics2D g2)
@@ -45,16 +47,15 @@ public class JPanelClass extends JPanel
 	public void drawItemsInView(Graphics g)
 	{
 		Graphics2D g2 = (Graphics2D)g;
-		JViewport vp = (JViewport)getParent();
+		vp = (JViewport)getParent();
 		
-		g2.transform(at);
-		g2.draw((Rectangle2D)vp.getViewRect());
 		out.parallelStream()
 			.forEach(shape ->
 			{
-				if (shape.intersects((Rectangle2D)vp.getViewRect()))
-					g2.draw(shape);
+				if (shape.createTransformedShape(at).intersects(getVisibleRect()))
+					g2.draw(shape.createTransformedShape(at));
 			});
+		g2.draw(getVisibleRect());
 	}
 	
 	@Override

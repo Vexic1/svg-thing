@@ -19,7 +19,7 @@ public class SVGParser
 	static public ArrayList<Path2D.Double> parseFile(File f) throws ParserConfigurationException, SAXException, IOException 
 	{
 		ArrayList<Path2D.Double> out = new ArrayList<Path2D.Double>();
-				
+		
 		NodeList paths = DocumentBuilderFactory
 			.newDefaultInstance()
 			.newDocumentBuilder()
