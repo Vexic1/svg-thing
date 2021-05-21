@@ -16,19 +16,7 @@ import org.xml.sax.SAXException;
  */
 public class SVGParser
 {
-//	WHAT??????
-/*	public SVGParser(String svg)	//change??
-	{
-		this.svg = svg;
-	  //...?
-	}
-*/
-/*	public SVGParser(File svg)
-	{
-		
-	}
-*/	
-	public ArrayList<Path2D.Double> parseFile(File f) throws ParserConfigurationException, SAXException, IOException 
+	static public ArrayList<Path2D.Double> parseFile(File f) throws ParserConfigurationException, SAXException, IOException 
 	{
 		ArrayList<Path2D.Double> out = new ArrayList<Path2D.Double>();
 				
@@ -55,7 +43,7 @@ public class SVGParser
 		return out;
 	}
 	
-	private Path2D.Double parseSVG(String path) throws IOException
+	static private Path2D.Double parseSVG(String path) throws IOException
 	{
 		Path2D.Double out = new Path2D.Double();
 		out.moveTo(0.0,0.0);
