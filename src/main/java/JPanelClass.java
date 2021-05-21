@@ -13,6 +13,9 @@ public class JPanelClass extends JPanel
 {
 	JViewport vp;
 	Rectangle r;
+	int maxX = 0;
+	int maxY = 0;
+	Dimension dim = new Dimension();
 	ArrayList<Path2D.Double> out;
 	AffineTransform at = new AffineTransform();
 	
@@ -23,15 +26,19 @@ public class JPanelClass extends JPanel
 		this.setVisible(true);
 		this.setFocusable(true);
 
-		int maxX = 0;
-		int maxY = 0;
 		for (Path2D.Double shape : out)
 		{
-			maxX = (int)shape.getBounds2D().getMaxX() > maxX ? (int)shape.getBounds2D().getMaxX() : maxX;
-			maxY = (int)shape.getBounds2D().getMaxY() > maxY ? (int)shape.getBounds2D().getMaxX() : maxY;
+			dim.width = (int)shape.getBounds2D().getMaxX() > maxX ? (int)shape.getBounds2D().getMaxX() : dim.width;
+			dim.height = (int)shape.getBounds2D().getMaxY() > maxY ? (int)shape.getBounds2D().getMaxX() : dim.height;
 		}
-		this.setPreferredSize(new Dimension(maxX, maxY));
-		
+		this.setPreferredSize(dim);	
+	}
+	
+	public void scale(int factor)
+	{
+		dim.width *= factor;
+		dim.height *= factor;
+		setPreferredSize(dim);
 	}
 		
 	public void drawItems(Graphics2D g2)
@@ -46,12 +53,15 @@ public class JPanelClass extends JPanel
 		Graphics2D g2 = (Graphics2D)g;
 		vp = (JViewport)getParent();
 		
+		g2.setClip(getVisibleRect());
 		out.parallelStream()
 			.forEach(shape ->
 			{
-				if (shape.createTransformedShape(at).intersects(getVisibleRect()))
+				g2.draw(shape.createTransformedShape(at));
+/*				if (shape.createTransformedShape(at).intersects(getVisibleRect()) || getVisibleRect().contains(shape.createTransformedShape(at).getBounds()))
 					g2.draw(shape.createTransformedShape(at));
-			});
+*/			});
+		g2.draw(getVisibleRect());
 	}
 	
 	@Override
