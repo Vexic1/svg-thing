@@ -27,11 +27,11 @@ public class Main
 	{
 		JFrame window = new JFrame();
 		JPanelClass jp = new JPanelClass();
-//		JSlider js = new JSlider(JSlider.VERTICAL, 1, 10, 4);
+		JSlider js = new JSlider(JSlider.VERTICAL, 1, 10, 4);
 		JScrollPane sp = new JScrollPane(jp, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		sp.setPreferredSize(new Dimension(700,600));
 		JViewport vp = sp.getViewport();
-/*		ChangeListener cl = new ChangeListener()
+		ChangeListener cl = new ChangeListener()
 		{//anonymous class
 			int zoom;
 			
@@ -48,9 +48,9 @@ public class Main
 			}
 		};
 		js.addChangeListener(cl);
-*/				
+				
 		window.add(sp);
-//		window.add(js);
+		window.add(js);
 
 //		drag scroll
 //		sp.setAutoscrolls(false);
@@ -71,30 +71,21 @@ public class Main
 				System.out.println(vp.getViewRect());
 //				System.out.println(jp.r);
 				System.out.println(jp.getVisibleRect());
-				jp.repaint();
 			}
 			
 			@Override
 			public void mouseDragged(MouseEvent e)
 			{
 				vp.setViewPosition(new Point(vp.getViewPosition().x + (lastX - e.getX()), vp.getViewPosition().y + (lastY - e.getY())));
+//				jp.r.translate(lastX - e.getX(), lastY - e.getY());
+//				vp.scrollRectToVisible(jp.r);
 				lastX = e.getX();
 				lastY = e.getY();
-			}
-			
-			@Override
-			public void mouseWheelMoved(MouseWheelEvent e)
-			{
-				jp.scale(e.getWheelRotation());
-				jp.at.scale(0-(1+e.getPreciseWheelRotation()/4),0-(1+e.getPreciseWheelRotation()/4));
-				jp.repaint();
 			}
 		};
 		sp.addMouseListener(mouse);
 		sp.addMouseMotionListener(mouse);
-		sp.addMouseWheelListener(mouse);
-		
-		initializeJFrame(window);
+		initializeJFrame(window);		  //initializes the window to your settings
 
 //test
 	}
