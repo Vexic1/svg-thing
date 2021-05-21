@@ -55,7 +55,6 @@ public class JPanelClass extends JPanel
 				if (shape.createTransformedShape(at).intersects(getVisibleRect()))
 					g2.draw(shape.createTransformedShape(at));
 			});
-		g2.draw(getVisibleRect());
 	}
 	
 	@Override
