@@ -14,7 +14,8 @@ public class Main
 	public static void initializeJFrame(JFrame jf)
 	{
 		jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //makes the exit icon work correctly
-		jf.setSize(1100, 800);				 //sets the size of the window
+//		jf.setSize(1100, 800);				 //sets the size of the window
+		jf.pack();
 		jf.setTitle("test");				  // sets the title bar
 		jf.setVisible(true);
 		
@@ -123,10 +124,6 @@ public class Main
 		JPanel imageContainer = new JPanel();
 		imageContainer.add(sp);
 		imageContainer.add(js);
-		
-//		JSplitPane jsp = new JSplitPane(JSplitPane.VERTICAL_SPLIT, imageContainer, jlsp);
-//		jsp.setPreferredSize(new Dimension());
-//		imageContainer.setPreferredSize(new Dimension(400,300));
 		
 		/*	adding everything to the JFrame	*/
 		c.gridx = 0;

@@ -42,7 +42,7 @@ public class SVGParser
 		
 		return out;
 	}
-	
+		
 	static private Path2D.Double parseSVG(String path) throws IOException
 	{
 		Path2D.Double out = new Path2D.Double();
@@ -243,7 +243,23 @@ public class SVGParser
 					break;
 					
 				case 'A':
+					//https://math.stackexchange.com/a/434482
+					double w = 2.0*(double)command.remove(1);
+					double h = 2.0*(double)command.remove(1);
+					double rot = (double)command.remove(1);
+					command.remove(1);
+					command.remove(1);
+					double x = (double)command.remove(1);
+					double y = (double)command.remove(1);
+					out.getCurrentPoint().getX();
+					out.getCurrentPoint().getY();					
 					
+					out.append(
+						new Arc2D.Double(
+							w,
+							h,
+							
+						).getPathIterator(affine transform rotate??), true);
 /*
 				MORE CASES
 */				case 'Z':
