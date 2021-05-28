@@ -1,17 +1,13 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
-import java.awt.geom.PathIterator;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Main
 {
@@ -26,11 +22,27 @@ public class Main
 	
 	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException
 	{
+		System.setProperty("apple.laf.useScreenMenuBar", "true");
 		/*	declarations and initializations	*/
 		JFrame window = new JFrame();
+		JMenuBar bar = new JMenuBar();
+		JMenu file = new JMenu("File");
+		
+		JFileChooser fc = new JFileChooser();
+		fc.setFileFilter(new FileNameExtensionFilter("SVG file", "svg"));
+		JMenuItem open = new JMenuItem(new AbstractAction("Open")
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				fc.showOpenDialog(null);
+			}
+		});
+		file.add(open);
+		bar.add(file);
+				
 		window.setLayout(new GridBagLayout());
 		
-		JPanelClass jp = new JPanelClass();
+		VectorImageViewer jp = new VectorImageViewer();
 		JSlider js = new JSlider(JSlider.VERTICAL, 1, 10, 4);
 		js.createStandardLabels(1);
 		js.setMajorTickSpacing(1);
@@ -38,7 +50,7 @@ public class Main
 		js.setSnapToTicks(true);
 		
 		JScrollPane sp = new JScrollPane(jp, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		sp.setPreferredSize(new Dimension(300,200));
+		sp.setPreferredSize(new Dimension(500,300));
 		
 		JViewport vp = sp.getViewport();
 		GridBagConstraints c = new GridBagConstraints();
@@ -112,12 +124,12 @@ public class Main
 		imageContainer.add(sp);
 		imageContainer.add(js);
 		
-		JSplitPane jsp = new JSplitPane(JSplitPane.VERTICAL_SPLIT, imageContainer, jlsp);
+//		JSplitPane jsp = new JSplitPane(JSplitPane.VERTICAL_SPLIT, imageContainer, jlsp);
+//		jsp.setPreferredSize(new Dimension());
 //		imageContainer.setPreferredSize(new Dimension(400,300));
-		imageContainer.setPreferredSize(new Dimension(600,200));
 		
 		/*	adding everything to the JFrame	*/
-/*		c.gridx = 0;
+		c.gridx = 0;
 		c.gridy = 0;
 		c.gridwidth = 3;
 		c.gridheight = 1;
@@ -128,7 +140,8 @@ public class Main
 		c.gridy = 1;
 		c.gridwidth = 1;
 		window.add(jlsp, c);
-*/		window.add(jsp);
+//		window.add(jsp);
+		window.setJMenuBar(bar);
 		initializeJFrame(window);		  //initializes the window to your settings
 
 //test

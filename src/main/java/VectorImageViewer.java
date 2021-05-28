@@ -9,7 +9,7 @@ import javax.swing.JViewport;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
-public class JPanelClass extends JPanel
+public class VectorImageViewer extends JPanel
 {
 	JViewport vp;
 	Rectangle r;
@@ -17,7 +17,7 @@ public class JPanelClass extends JPanel
 	AffineTransform at = new AffineTransform();
 	Shape clicked;
 	
-	JPanelClass() throws ParserConfigurationException, SAXException, IOException
+	VectorImageViewer() throws ParserConfigurationException, SAXException, IOException
 	{
 		out = SVGParser.parseFile(new File("/Users/student/BlankMap-World.svg"));
 		
@@ -41,6 +41,11 @@ public class JPanelClass extends JPanel
 				(int)(getPreferredSize().width*factor), 
 				(int)(getPreferredSize().height*factor))
 		);
+	}
+	
+	public void setImage(File file) throws ParserConfigurationException, SAXException, IOException
+	{
+		out = SVGParser.parseFile(file);
 	}
 	
 	public void drawItems(Graphics2D g2)
