@@ -15,13 +15,14 @@ public class JPanelClass extends JPanel
 	Rectangle r;
 	ArrayList<Path2D.Double> out;
 	AffineTransform at = new AffineTransform();
+	Shape clicked;
 	
 	JPanelClass() throws ParserConfigurationException, SAXException, IOException
 	{
 		out = SVGParser.parseFile(new File("/Users/student/BlankMap-World.svg"));
 		
-		this.setVisible(true);
-		this.setFocusable(true);
+		setVisible(true);
+		setFocusable(true);
 
 		int maxX = 0;
 		int maxY = 0;
@@ -30,10 +31,18 @@ public class JPanelClass extends JPanel
 			maxX = (int)shape.getBounds2D().getMaxX() > maxX ? (int)shape.getBounds2D().getMaxX() : maxX;
 			maxY = (int)shape.getBounds2D().getMaxY() > maxY ? (int)shape.getBounds2D().getMaxX() : maxY;
 		}
-		this.setPreferredSize(new Dimension(maxX, maxY));
-		
+		setPreferredSize(new Dimension(maxX, maxY));
+
 	}
-		
+
+	public void scale(double factor)
+	{
+		setPreferredSize(new Dimension(
+				(int)(getPreferredSize().width*factor), 
+				(int)(getPreferredSize().height*factor))
+		);
+	}
+	
 	public void drawItems(Graphics2D g2)
 	{
 		g2.transform(at);
@@ -49,8 +58,12 @@ public class JPanelClass extends JPanel
 		out.parallelStream()
 			.forEach(shape ->
 			{
-				if (shape.createTransformedShape(at).intersects(getVisibleRect()))
-					g2.draw(shape.createTransformedShape(at));
+				Shape transformed = shape.createTransformedShape(at);
+				if (transformed.intersects(getVisibleRect()))
+					if (shape == clicked)
+						g2.fill(transformed);
+					else
+						g2.draw(transformed);
 			});
 	}
 	
