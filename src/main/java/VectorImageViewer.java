@@ -11,21 +11,21 @@ import org.xml.sax.SAXException;
 
 public class VectorImageViewer extends JPanel
 {
+	int maxX = 0;
+	int maxY = 0;
 	JViewport vp;
 	Rectangle r;
 	ArrayList<Path2D.Double> out;
 	AffineTransform at = new AffineTransform();
 	Shape clicked;
 	
-	VectorImageViewer() throws ParserConfigurationException, SAXException, IOException
+	VectorImageViewer(File svgFile) throws ParserConfigurationException, SAXException, IOException
 	{
-		out = SVGParser.parseFile(new File("/Users/student/BlankMap-World.svg"));
+		out = SVGParser.parseFile(svgFile);
 		
 		setVisible(true);
 		setFocusable(true);
 
-		int maxX = 0;
-		int maxY = 0;
 		for (Path2D.Double shape : out)
 		{
 			maxX = (int)shape.getBounds2D().getMaxX() > maxX ? (int)shape.getBounds2D().getMaxX() : maxX;
@@ -34,18 +34,30 @@ public class VectorImageViewer extends JPanel
 		setPreferredSize(new Dimension(maxX, maxY));
 
 	}
-
+	VectorImageViewer()
+	{
+		out = new ArrayList<Path2D.Double>();
+		setVisible(true);
+		setFocusable(true);
+	}
+	
+	public void setFile(File svgFile) throws ParserConfigurationException, SAXException, IOException
+	{
+		out = SVGParser.parseFile(svgFile);
+		for (Path2D.Double shape : out)
+		{
+			maxX = (int)shape.getBounds2D().getMaxX() > maxX ? (int)shape.getBounds2D().getMaxX() : maxX;
+			maxY = (int)shape.getBounds2D().getMaxY() > maxY ? (int)shape.getBounds2D().getMaxX() : maxY;
+		}
+		setPreferredSize(new Dimension(maxX, maxY));
+	}
+	
 	public void scale(double factor)
 	{
 		setPreferredSize(new Dimension(
-				(int)(getPreferredSize().width*factor), 
-				(int)(getPreferredSize().height*factor))
+				(int)(maxX*factor), 
+				(int)(maxY*factor))
 		);
-	}
-	
-	public void setImage(File file) throws ParserConfigurationException, SAXException, IOException
-	{
-		out = SVGParser.parseFile(file);
 	}
 	
 	public void drawItems(Graphics2D g2)

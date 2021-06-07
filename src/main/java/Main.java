@@ -2,7 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Path2D;
-import java.io.IOException;
+import java.io.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.xml.parsers.ParserConfigurationException;
@@ -21,21 +21,35 @@ public class Main
 		
 	}
 	
+//	public static void test()
+	
 	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException
 	{
+		//condition that detects OS
 		System.setProperty("apple.laf.useScreenMenuBar", "true");
 		/*	declarations and initializations	*/
 		JFrame window = new JFrame();
 		JMenuBar bar = new JMenuBar();
 		JMenu file = new JMenu("File");
-		
+		VectorImageViewer jp = new VectorImageViewer(new File("/Users/student/BlankMap-World.svg"));
+		JList<Path2D.Double> jl = new JList<>(jp.out.toArray(new Path2D.Double[jp.out.size()]));
 		JFileChooser fc = new JFileChooser();
 		fc.setFileFilter(new FileNameExtensionFilter("SVG file", "svg"));
 		JMenuItem open = new JMenuItem(new AbstractAction("Open")
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				fc.showOpenDialog(null);
+				try 
+				{
+					fc.showOpenDialog(null);
+					jp.setFile(fc.getSelectedFile());
+					jp.repaint();
+					jl.setListData(jp.out.toArray(new Path2D.Double[jp.out.size()]));
+				}
+				catch (Exception err)	//placeholder
+				{
+					System.err.println("test");
+				}
 			}
 		});
 		file.add(open);
@@ -43,7 +57,6 @@ public class Main
 				
 		window.setLayout(new GridBagLayout());
 		
-		VectorImageViewer jp = new VectorImageViewer();
 		JSlider js = new JSlider(JSlider.VERTICAL, 1, 10, 4);
 		js.createStandardLabels(1);
 		js.setMajorTickSpacing(1);
@@ -55,41 +68,41 @@ public class Main
 		
 		JViewport vp = sp.getViewport();
 		GridBagConstraints c = new GridBagConstraints();
-		JList<Path2D.Double> jl = new JList<Path2D.Double>(jp.out.toArray(new Path2D.Double[jp.out.size()]));
 		JScrollPane jlsp = new JScrollPane(jl);
 		ChangeListener cl = new ChangeListener()
 		{//anonymous class
-			int zoom;
+//			int zoom;
 			
 			public void stateChanged(ChangeEvent e)
 			{
-				zoom = ((JSlider)e.getSource()).getValue();
+				int zoom = ((JSlider)e.getSource()).getValue();
+				System.out.println(zoom/4.0);
 				jp.at.setToScale(zoom/4.0, zoom/4.0);
 				jp.scale(zoom/4.0);
 				jp.repaint();
-//				jp.revalidate();
 			}
-
 		};
 		js.addChangeListener(cl);
 
 		MouseAdapter mouse = new MouseAdapter()
 		{
 			int lastX, lastY;
-			Shape clicked = new Path2D.Double();
 			
 			@Override
 			public void mouseClicked(MouseEvent e)
 			{
-/*				jp.clicked = 
+				jp.clicked = 
 					jp.out.parallelStream()
 						.map(shape -> shape.createTransformedShape(jp.at))
 						.filter(shape -> shape.contains(e.getPoint()))
+						.peek(System.out::println)
 						.min(
 							(Shape p1, Shape p2) ->
 								(p1.getBounds().width * p1.getBounds().height) - (p2.getBounds().width * p2.getBounds().height))
 					.get();
-*/			}
+				System.out.println("\n"+jp.clicked);
+				jl.setSelectedValue(jp.clicked, true);
+			}
 			
 			@Override
 			public void mousePressed(MouseEvent e)

@@ -6,17 +6,11 @@ import javax.xml.parsers.*;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
-/**
- * TODO:
- *		make everything work
- *		write better javadoc
- *		parse XML
- * [insert description here]
- * @author [redacted]
- */
 public class SVGParser
 {
-	static public ArrayList<Path2D.Double> parseFile(File f) throws ParserConfigurationException, SAXException, IOException 
+	
+	
+	public static ArrayList<Path2D.Double> parseFile(File f) throws ParserConfigurationException, SAXException, IOException 
 	{
 		ArrayList<Path2D.Double> out = new ArrayList<Path2D.Double>();
 		
@@ -43,7 +37,7 @@ public class SVGParser
 		return out;
 	}
 		
-	static private Path2D.Double parseSVG(String path) throws IOException
+	private static Path2D.Double parseSVG(String path) throws IOException
 	{
 		Path2D.Double out = new Path2D.Double();
 		out.moveTo(0.0,0.0);
@@ -242,24 +236,46 @@ public class SVGParser
 					}
 					break;
 					
-				case 'A':
+//					case 'A':
 					//https://math.stackexchange.com/a/434482
-					double w = 2.0*(double)command.remove(1);
-					double h = 2.0*(double)command.remove(1);
-					double rot = (double)command.remove(1);
-					command.remove(1);
-					command.remove(1);
-					double x = (double)command.remove(1);
-					double y = (double)command.remove(1);
-					out.getCurrentPoint().getX();
-					out.getCurrentPoint().getY();					
+					//https://www.geogebra.org/calculator
+/*					construct an arc such that it starts at the current point and ends at the end point
+					(such that the arc's ellipse intersects both points)
+					equation of an ellipse:
 					
-					out.append(
-						new Arc2D.Double(
-							w,
-							h,
-							
-						).getPathIterator(affine transform rotate??), true);
+						(x - x0)^2				(y - y0)^2
+						----------		+		----------	=	1
+							a^2						b^2
+					
+					where x0, y0 is the center (may not be needed),
+					a is the semi-major axis (longest radius)
+					b is the semi-minor axis (shortest radius)
+					
+					SVG specifies arcs like so:
+					radius 1
+					radius 2
+					angle ellipse is rotated by
+					whether the arc is the shortest between the two points or the longest
+					whether the arc goes clockwise or counterclockwise (flips ellipse)
+					the end point
+					
+					Java specifies arcs like so:
+					the upper-left corner of the arc's bounding rectangle
+					the width and height of the ellipse
+					the starting and ending angle
+					
+					-or-
+					
+					2 lines that meet, the starting angle tangent to one and the ending angle tangent to the other, given the radius of the arc
+					
+					-or-
+					
+					the upper-left corner of the arc
+					the dimensions of the ellipse
+					the starting and ending angle
+*/
+//					Arc2D.Double arc = new Arc2D.Double();
+//					arc.setArc(out.getCurrentPoint(), size, 0, 0, 0);
 /*
 				MORE CASES
 */				case 'Z':
