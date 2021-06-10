@@ -15,7 +15,7 @@ public class VectorImageViewer extends JPanel
 	int maxY = 0;
 	JViewport vp;
 	Rectangle r;
-	ArrayList<Path2D.Double> out;
+	ArrayList<Path> out;
 	AffineTransform at = new AffineTransform();
 	Shape clicked;
 	
@@ -26,7 +26,7 @@ public class VectorImageViewer extends JPanel
 		setVisible(true);
 		setFocusable(true);
 
-		for (Path2D.Double shape : out)
+		for (Path shape : out)
 		{
 			maxX = (int)shape.getBounds2D().getMaxX() > maxX ? (int)shape.getBounds2D().getMaxX() : maxX;
 			maxY = (int)shape.getBounds2D().getMaxY() > maxY ? (int)shape.getBounds2D().getMaxX() : maxY;
@@ -36,7 +36,7 @@ public class VectorImageViewer extends JPanel
 	}
 	VectorImageViewer()
 	{
-		out = new ArrayList<Path2D.Double>();
+		out = new ArrayList<Path>();
 		setVisible(true);
 		setFocusable(true);
 	}
@@ -44,7 +44,7 @@ public class VectorImageViewer extends JPanel
 	public void setFile(File svgFile) throws ParserConfigurationException, SAXException, IOException
 	{
 		out = SVGParser.parseFile(svgFile);
-		for (Path2D.Double shape : out)
+		for (Path shape : out)
 		{
 			maxX = (int)shape.getBounds2D().getMaxX() > maxX ? (int)shape.getBounds2D().getMaxX() : maxX;
 			maxY = (int)shape.getBounds2D().getMaxY() > maxY ? (int)shape.getBounds2D().getMaxX() : maxY;
@@ -63,7 +63,7 @@ public class VectorImageViewer extends JPanel
 	public void drawItems(Graphics2D g2)
 	{
 		g2.transform(at);
-		for (Path2D.Double shape : out)
+		for (Path shape : out)
 			g2.draw(shape);
 	}
 	
@@ -75,13 +75,17 @@ public class VectorImageViewer extends JPanel
 		out.parallelStream()
 			.forEach(shape ->
 			{
+//				g2.setColor(Color.blue);
+//				g2.draw(shape);
+				g2.setColor(Color.black);
 				Shape transformed = shape.createTransformedShape(at);
 				if (transformed.intersects(getVisibleRect()))
-					if (shape == clicked)
+					g2.draw(transformed);
+/*					if (shape == clicked)
 						g2.fill(transformed);
 					else
 						g2.draw(transformed);
-			});
+*/			});
 	}
 	
 	@Override

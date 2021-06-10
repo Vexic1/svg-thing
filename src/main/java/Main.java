@@ -1,16 +1,16 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.Path2D;
+import java.awt.geom.*;
 import java.io.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import java.util.ArrayList;
+import javax.swing.event.*;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Main
-{
+{	
 	public static void initializeJFrame(JFrame jf)
 	{
 		jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //makes the exit icon work correctly
@@ -21,18 +21,72 @@ public class Main
 		
 	}
 	
-//	public static void test()
+	static class PathViewer extends JPanel
+	{
+		AffineTransform at = new AffineTransform();
+		Path p = new Path(null);
+		
+		public void setPath(Path p)
+		{
+			this.p = p;
+			repaint();
+		}
+		public void drawPath(Graphics2D g)
+		{
+			double scale;
+			//fit while maintaining size
+			Rectangle2D bounds = p.getBounds2D();
+			if (bounds.getWidth() > bounds.getHeight())
+			{
+				scale = p.getBounds2D().getWidth()/getPreferredSize().width;
+				at.setToScale(scale, 1.0);
+			}
+			else
+			{
+				scale = p.getBounds2D().getHeight()/getPreferredSize().height;
+				at.setToScale(1.0, scale);
+			}
+			//double scale = bounds.getWidth() > bounds.getHeight() ? d : d ;
+			//at.setToScale(getPreferredSize().width/bounds.getWidth(), getPreferredSize().height/bounds.getHeight());
+			at.setToTranslation(-1*bounds.getX(), -1*bounds.getY());
+			//g.scale(getPreferredSize().width/bounds.getWidth(), getPreferredSize().height/bounds.getHeight());
+			//g.translate(-1*bounds.getX(), -1*bounds.getY());
+			g.draw(p.createTransformedShape(at));
+		}
+		
+		@Override
+		public void paintComponent(Graphics g)
+		{
+			super.paintComponents(g);
+			drawPath((Graphics2D)g);
+		}
+	}
 	
 	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException
 	{
 		//condition that detects OS
 		System.setProperty("apple.laf.useScreenMenuBar", "true");
+		
 		/*	declarations and initializations	*/
 		JFrame window = new JFrame();
 		JMenuBar bar = new JMenuBar();
 		JMenu file = new JMenu("File");
 		VectorImageViewer jp = new VectorImageViewer(new File("/Users/student/BlankMap-World.svg"));
-		JList<Path2D.Double> jl = new JList<>(jp.out.toArray(new Path2D.Double[jp.out.size()]));
+		
+		PathViewer pathViewer = new PathViewer();
+		//pathViewer.setOpaque(true);
+		pathViewer.setPreferredSize(new Dimension(200,200));
+		
+		JList<Path> jl = new JList<>(jp.out.toArray(new Path[jp.out.size()]));
+		jl.addListSelectionListener(new ListSelectionListener()
+		{
+			@Override
+			public void valueChanged(ListSelectionEvent e)
+			{
+				pathViewer.setPath(jl.getSelectedValue());
+			}
+		});
+		
 		JFileChooser fc = new JFileChooser();
 		fc.setFileFilter(new FileNameExtensionFilter("SVG file", "svg"));
 		JMenuItem open = new JMenuItem(new AbstractAction("Open")
@@ -44,7 +98,7 @@ public class Main
 					fc.showOpenDialog(null);
 					jp.setFile(fc.getSelectedFile());
 					jp.repaint();
-					jl.setListData(jp.out.toArray(new Path2D.Double[jp.out.size()]));
+					jl.setListData(jp.out.toArray(new Path[jp.out.size()]));
 				}
 				catch (Exception err)	//placeholder
 				{
@@ -66,6 +120,72 @@ public class Main
 		JScrollPane sp = new JScrollPane(jp, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		sp.setPreferredSize(new Dimension(500,300));
 		
+/*		JPanel pathViewerContainer = new JPanel();
+		JPanel pathViewer = new JPanel()
+		{
+			
+			public void drawPathStepwise(Path path)
+			{
+				Point2D cp = new Point2D.Double();
+				Path step;
+				ArrayList<Path> pathList = new ArrayList<Path>();
+				double[] coords = new double[6];
+				PathIterator pi = path.getPathIterator(null);
+				while (!pi.isDone())
+				{
+					switch (pi.currentSegment(coords))
+					{
+						case PathIterator.SEG_MOVETO:
+							cp.setLocation(coords[0], coords[1]);
+							step = new Path(null);
+							step.moveTo(coords[0],coords[1]);
+							pathList.add(step);
+							pi.next();
+							break;
+						case PathIterator.SEG_LINETO:
+							cp.setLocation(coords[0], coords[1]);
+							step = new Path(null);
+							step.moveTo(cp.getX(),cp.getY());
+							step.lineTo(coords[0],coords[1]);
+							pathList.add(step);
+							pi.next();
+							break;
+						case PathIterator.SEG_QUADTO:
+							cp.setLocation(coords[2],coords[3]);
+							step = new Path(null);
+							step.moveTo(cp.getX(),cp.getY());
+							step.quadTo(coords[0], coords[1], coords[2], coords[3]);
+							pathList.add(step);
+							pi.next();
+							break;
+						case PathIterator.SEG_CUBICTO:
+							cp.setLocation(coords[4],coords[5]);
+							step = new Path(null);
+							step.moveTo(cp.getX(),cp.getY());
+							step.curveTo(coords[0], coords[1], coords[2], coords[3], coords[4], coords[5]);
+							pathList.add(step);
+							pi.next();
+							break;
+						case PathIterator.SEG_CLOSE:
+							System.out.println("placeholder");
+							pi.next();
+							break;
+					}
+				}
+			}
+		};
+		pathViewerContainer.setPreferredSize(new Dimension(100,100));
+		JButton next = new JButton(
+			new AbstractAction("Next")
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					
+				}
+			})
+		);
+		pathViewerContainer.add(new JButton("test"));
+*/		
 		JViewport vp = sp.getViewport();
 		GridBagConstraints c = new GridBagConstraints();
 		JScrollPane jlsp = new JScrollPane(jl);
@@ -91,16 +211,34 @@ public class Main
 			@Override
 			public void mouseClicked(MouseEvent e)
 			{
-				jp.clicked = 
+				Point pt = e.getPoint();
+				pt.x += vp.getViewPosition().x;
+				pt.y += vp.getViewPosition().y;
+				Graphics g = jp.getGraphics();
+				Point2D.Double trpt = new Point2D.Double();
+				try
+				{
+					jp.at.inverseTransform(pt, trpt);
+				} catch (Exception ex)
+				{
+					System.err.println("placeholder");
+				}
+/*				g.drawLine(0, (int)trpt.y, jp.maxX, (int)trpt.y);
+				g.drawLine((int)trpt.x, 0, (int)trpt.x, jp.maxY);
+				g.setColor(Color.red);
+				g.drawLine(0, pt.y, jp.maxX, pt.y);
+				g.drawLine(pt.x, 0, pt.x, jp.maxY);
+				g.setColor(Color.black);
+//				g.drawLine(e.getX(), e.getY(), (int)trpt.x, (int)trpt.y);
+*/				jp.clicked = 
 					jp.out.parallelStream()
-						.map(shape -> shape.createTransformedShape(jp.at))
-						.filter(shape -> shape.contains(e.getPoint()))
-						.peek(System.out::println)
+//						.map(shape -> shape.createTransformedShape(jp.at))
+						.filter(shape -> shape.contains(trpt))
 						.min(
 							(Shape p1, Shape p2) ->
 								(p1.getBounds().width * p1.getBounds().height) - (p2.getBounds().width * p2.getBounds().height))
 					.get();
-				System.out.println("\n"+jp.clicked);
+//				System.out.println("\n"+jp.clicked);
 				jl.setSelectedValue(jp.clicked, true);
 			}
 			
@@ -150,6 +288,10 @@ public class Main
 		c.gridy = 1;
 		c.gridwidth = 1;
 		window.add(jlsp, c);
+		
+		c.gridx = 2;
+		window.add(pathViewer, c);
+//		window.add(pathViewerContainer, c);
 //		window.add(jsp);
 		window.setJMenuBar(bar);
 		initializeJFrame(window);		  //initializes the window to your settings
