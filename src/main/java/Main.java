@@ -4,6 +4,7 @@ import java.awt.event.*;
 import java.awt.geom.*;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Vector;
 import javax.swing.event.*;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
@@ -33,24 +34,11 @@ public class Main
 		}
 		public void drawPath(Graphics2D g)
 		{
-			double scale;
-			//fit while maintaining size
+			at.setToIdentity();
 			Rectangle2D bounds = p.getBounds2D();
-			if (bounds.getWidth() > bounds.getHeight())
-			{
-				scale = p.getBounds2D().getWidth()/getPreferredSize().width;
-				at.setToScale(scale, 1.0);
-			}
-			else
-			{
-				scale = p.getBounds2D().getHeight()/getPreferredSize().height;
-				at.setToScale(1.0, scale);
-			}
-			//double scale = bounds.getWidth() > bounds.getHeight() ? d : d ;
-			//at.setToScale(getPreferredSize().width/bounds.getWidth(), getPreferredSize().height/bounds.getHeight());
-			at.setToTranslation(-1*bounds.getX(), -1*bounds.getY());
-			//g.scale(getPreferredSize().width/bounds.getWidth(), getPreferredSize().height/bounds.getHeight());
-			//g.translate(-1*bounds.getX(), -1*bounds.getY());
+			double ratio = Math.min(getPreferredSize().width/bounds.getWidth(), getPreferredSize().height/bounds.getHeight());
+			at.scale(ratio, ratio);
+			at.translate(-1*bounds.getX(), -1*bounds.getY());
 			g.draw(p.createTransformedShape(at));
 		}
 		
@@ -72,10 +60,11 @@ public class Main
 		JMenuBar bar = new JMenuBar();
 		JMenu file = new JMenu("File");
 		VectorImageViewer jp = new VectorImageViewer(new File("/Users/student/BlankMap-World.svg"));
+		jp.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
 		
 		PathViewer pathViewer = new PathViewer();
 		//pathViewer.setOpaque(true);
-		pathViewer.setPreferredSize(new Dimension(200,200));
+		pathViewer.setPreferredSize(new Dimension(100,100));
 		
 		JList<Path> jl = new JList<>(jp.out.toArray(new Path[jp.out.size()]));
 		jl.addListSelectionListener(new ListSelectionListener()
@@ -86,6 +75,10 @@ public class Main
 				pathViewer.setPath(jl.getSelectedValue());
 			}
 		});
+		
+		JTree commandTree = new JTree();
+		//JList<ArrayList<Object>> commandList = new JList<>();				//
+		//JScrollPane commandListContainer = new JScrollPane(commandList);	//replace with jtextpane or jtree?
 		
 		JFileChooser fc = new JFileChooser();
 		fc.setFileFilter(new FileNameExtensionFilter("SVG file", "svg"));
@@ -223,14 +216,14 @@ public class Main
 				{
 					System.err.println("placeholder");
 				}
-/*				g.drawLine(0, (int)trpt.y, jp.maxX, (int)trpt.y);
+				g.drawLine(0, (int)trpt.y, jp.maxX, (int)trpt.y);
 				g.drawLine((int)trpt.x, 0, (int)trpt.x, jp.maxY);
 				g.setColor(Color.red);
 				g.drawLine(0, pt.y, jp.maxX, pt.y);
 				g.drawLine(pt.x, 0, pt.x, jp.maxY);
 				g.setColor(Color.black);
 //				g.drawLine(e.getX(), e.getY(), (int)trpt.x, (int)trpt.y);
-*/				jp.clicked = 
+				jp.clicked = 
 					jp.out.parallelStream()
 //						.map(shape -> shape.createTransformedShape(jp.at))
 						.filter(shape -> shape.contains(trpt))
@@ -240,6 +233,9 @@ public class Main
 					.get();
 //				System.out.println("\n"+jp.clicked);
 				jl.setSelectedValue(jp.clicked, true);
+//				commandList.setListData(new Vector(jp.clicked.commands));
+				commandTree.setModel(JTree.createTreeModel(new Vector(jp.clicked.commands)));	//why is it protected
+				
 			}
 			
 			@Override
@@ -289,6 +285,9 @@ public class Main
 		c.gridwidth = 1;
 		window.add(jlsp, c);
 		
+		c.gridx = 1;
+		window.add(commandListContainer, c);
+				
 		c.gridx = 2;
 		window.add(pathViewer, c);
 //		window.add(pathViewerContainer, c);

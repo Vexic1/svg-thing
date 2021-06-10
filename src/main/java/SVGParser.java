@@ -70,6 +70,7 @@ public class SVGParser
 	public static Path parseList(ArrayList<ArrayList<Object>> commands, String id)
 	{
 		Path out = new Path(id);
+		out.commands = commands;
 		out.moveTo(0.0,0.0);
 		for (ArrayList<Object> command : commands)
 		{

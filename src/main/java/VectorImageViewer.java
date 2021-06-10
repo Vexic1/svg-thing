@@ -17,7 +17,7 @@ public class VectorImageViewer extends JPanel
 	Rectangle r;
 	ArrayList<Path> out;
 	AffineTransform at = new AffineTransform();
-	Shape clicked;
+	Path clicked;
 	
 	VectorImageViewer(File svgFile) throws ParserConfigurationException, SAXException, IOException
 	{
