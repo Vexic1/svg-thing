@@ -4,11 +4,13 @@ import java.awt.event.*;
 import java.awt.geom.*;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Vector;
 import javax.swing.event.*;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.tree.*;
 
 public class Main
 {	
@@ -76,9 +78,26 @@ public class Main
 			}
 		});
 		
-		JTree commandTree = new JTree();
-		//JList<ArrayList<Object>> commandList = new JList<>();				//
-		//JScrollPane commandListContainer = new JScrollPane(commandList);	//replace with jtextpane or jtree?
+		JTree commandTree = new JTree(new Vector(jp.out));
+		DefaultTreeModel model = (DefaultTreeModel) commandTree.getModel();
+		Enumeration<TreeNode> paths = ((DefaultMutableTreeNode)model.getRoot()).children();
+		
+		while (paths.hasMoreElements())
+		{
+			DefaultMutableTreeNode path = (DefaultMutableTreeNode)paths.nextElement();
+			path.setAllowsChildren(true);
+			for (ArrayList<Object> command : ((Path)path.getUserObject()).commands)
+			{
+				System.out.println(command.size());
+				DefaultMutableTreeNode node = new DefaultMutableTreeNode(command);
+				//for (Object param : ((ArrayList<Object>)node.getUserObject()))
+				for (Object param : command)
+					node.add(new DefaultMutableTreeNode(param));
+				path.add(node);
+			}
+		}
+		
+		JScrollPane treeContainer = new JScrollPane(commandTree);
 		
 		JFileChooser fc = new JFileChooser();
 		fc.setFileFilter(new FileNameExtensionFilter("SVG file", "svg"));
@@ -234,7 +253,6 @@ public class Main
 //				System.out.println("\n"+jp.clicked);
 				jl.setSelectedValue(jp.clicked, true);
 //				commandList.setListData(new Vector(jp.clicked.commands));
-				commandTree.setModel(JTree.createTreeModel(new Vector(jp.clicked.commands)));	//why is it protected
 				
 			}
 			
@@ -280,18 +298,21 @@ public class Main
 		c.fill = GridBagConstraints.BOTH;
 		window.add(imageContainer, c);
 						
-		c.gridx = 0;
+/*		c.gridx = 0;
 		c.gridy = 1;
 		c.gridwidth = 1;
 		window.add(jlsp, c);
 		
 		c.gridx = 1;
-		window.add(commandListContainer, c);
+*/		//window.add(commandListContainer, c);
+		c.gridx = 0;
+		c.gridy = 1;
+		c.gridwidth = 2;
+		window.add(treeContainer, c);		
 				
 		c.gridx = 2;
+		c.gridwidth = 1;
 		window.add(pathViewer, c);
-//		window.add(pathViewerContainer, c);
-//		window.add(jsp);
 		window.setJMenuBar(bar);
 		initializeJFrame(window);		  //initializes the window to your settings
 
